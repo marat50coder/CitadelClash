@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sky tone used for the pre-splash window and the Android 12+ splash
+         background, matching the top of the icon art. -->
+    <color name="launch_sky">#4FB8F5</color>
+</resources>

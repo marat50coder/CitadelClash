@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive icon background. A vertical gradient sampled from the icon art
+     (sky at the top, hazy skyline in the middle, ground at the bottom) so the
+     inset artwork blends seamlessly into the fill instead of sitting on a hard
+     border, and the whole icon stays covered under any mask. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:type="linear"
+        android:angle="270"
+        android:startColor="#0A6BCE"
+        android:centerColor="#84BFBC"
+        android:endColor="#3A4841" />
+</shape>

@@ -1,0 +1,92 @@
+name: citadelclashgame
+description: "Citadel Clash - a construction themed casino slot game."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  webview_flutter: ^4.14.1
+  audioplayers: ^6.8.1
+  shared_preferences: ^2.5.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+  image: ^4.9.1
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/Citadel_Clash_assets/Citadel_Clash_gameplay_assets/
+    - assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Game_Name.webp
+    - assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Vertical_Loading_Screen.webp
+    - assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Horizontal_Loading_Screen.webp
+    - assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Vertical_Nowifi_Screen.webp
+    - assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Horizontal_Nowifi_Screen.webp
+    - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/bgm_menu.wav
+    - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/bgm_game.wav
+    - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/button_click.wav
+    - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/block_place.wav
+    - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/drop.wav
+    - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/coin.wav
+    - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/win.wav
+    - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/success.wav
+    - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/level_up.wav
+    - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/cashout.wav
+    - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/fail.wav
+
+# Launcher icon + Android 12+ splash are maintained by hand under
+# android/app/src/main/res (a sky-to-ground gradient background @drawable/
+# ic_icon_bg + an 18% inset of the icon art, shared by
+# mipmap-anydpi-v26/ic_launcher.xml and drawable-anydpi-v26/ic_splash_logo.xml).
+# This block is kept only so a manual `dart run flutter_launcher_icons` still
+# produces a matching icon; it will overwrite the hand-written XML, so re-apply
+# the gradient background, inset and splash afterwards.
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: false
+  image_path: "assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Icon.png"
+  adaptive_icon_background: "#0A6BCE"
+  adaptive_icon_foreground: "assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Icon.png"
+  min_sdk_android: 23
