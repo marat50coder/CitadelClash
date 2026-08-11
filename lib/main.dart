@@ -80,16 +80,37 @@ class CitadelClashApp extends StatefulWidget {
 
 class _CitadelClashAppState extends State<CitadelClashApp>
     with WidgetsBindingObserver {
+  final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Warm/foreground taps arriving while the user is on game screens
+    // (no SiteShell mounted) have already stashed the URL as a cold URL.
+    // Bounce back through WarmupScreen so the boot pipeline reads it.
+    widget.push.onOrphanTap = _rerouteFromTap;
   }
 
   @override
   void dispose() {
+    widget.push.onOrphanTap = null;
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  void _rerouteFromTap() {
+    widget.board.invalidate();
+    _navKey.currentState?.pushAndRemoveUntil(
+      MaterialPageRoute<void>(
+        builder: (_) => WarmupScreen(
+          board: widget.board,
+          locker: widget.locker,
+          push: widget.push,
+        ),
+      ),
+      (_) => false,
+    );
   }
 
   @override
@@ -110,6 +131,7 @@ class _CitadelClashAppState extends State<CitadelClashApp>
     return MaterialApp(
       title: 'Citadel Clash',
       debugShowCheckedModeBanner: false,
+      navigatorKey: _navKey,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(

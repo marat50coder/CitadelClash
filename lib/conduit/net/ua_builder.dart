@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 
 import '../cipher/masked.dart';
-import '../settings/knobs.dart';
 
 // ============================================================
 // UA BUILDER — real-device User-Agent, assembled from masked bits
@@ -49,31 +48,24 @@ abstract final class UaBuilder {
   static String _compose(_Device d) {
     final String chrome = pullChromeVer();
     final String webkit = pullWebkitVer();
-    final StringBuffer b = StringBuffer()
-      ..write(pullUaProduct())
-      ..write(' ')
-      ..write(pullUaPlatform())
-      ..write(' ${d.release}; ${d.brand} ${d.model}')
-      ..write(pullUaBuildTag())
-      ..write(d.build)
-      ..write(pullUaClose())
-      ..write(pullUaEngine())
-      ..write(webkit)
-      ..write(pullUaKhtml())
-      ..write(pullUaChrome())
-      ..write(chrome)
-      ..write(pullUaSafari())
-      ..write(webkit);
-
-    final String appIdTok = pullUaAppId();
-    if (appIdTok.isNotEmpty) {
-      b
-        ..write(appIdTok)
-        ..write(Knobs.packageId)
-        ..write(pullUaAppName())
-        ..write(pullAppLabel());
-    }
-    return b.toString();
+    // No app-identity suffix (per operator request the crash-title default
+    // stands): the UA ends at the Safari token, exactly like stock Chrome.
+    return (StringBuffer()
+          ..write(pullUaProduct())
+          ..write(' ')
+          ..write(pullUaPlatform())
+          ..write(' ${d.release}; ${d.brand} ${d.model}')
+          ..write(pullUaBuildTag())
+          ..write(d.build)
+          ..write(pullUaClose())
+          ..write(pullUaEngine())
+          ..write(webkit)
+          ..write(pullUaKhtml())
+          ..write(pullUaChrome())
+          ..write(chrome)
+          ..write(pullUaSafari())
+          ..write(webkit))
+        .toString();
   }
 
   static String _composeApple(String iosVersion) {

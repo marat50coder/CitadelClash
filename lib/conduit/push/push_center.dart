@@ -43,6 +43,13 @@ class PushCenter {
   /// FCM rotated the token — the switchboard re-POSTs the config.
   void Function(String token)? onToken;
 
+  /// Fired when a tap arrives but no [onUrl] listener is attached
+  /// (typical case: user is deep in the game and taps a push, so
+  /// [SiteShell] is not mounted). The URL has already been stashed
+  /// as a cold URL; the app should reroute through WarmupScreen so
+  /// the boot pipeline picks it up.
+  void Function()? onOrphanTap;
+
   String? get token => _token;
 
   Future<void> boot() async {
@@ -64,7 +71,8 @@ class PushCenter {
       FirebaseMessaging.onMessageOpenedApp.listen(_onWarmTap);
 
       final RemoteMessage? initial = await _fm!.getInitialMessage();
-      if (initial != null) _onColdTap(initial);
+      // Await the stash so Switchboard's post-boot re-check sees it.
+      if (initial != null) await _onColdTap(initial);
 
       _ready = true;
     } catch (_) {
@@ -89,7 +97,7 @@ class PushCenter {
           final Map<String, dynamic> data =
               jsonDecode(payload) as Map<String, dynamic>;
           final String? url = data['url'] as String?;
-          if (url != null && url.isNotEmpty) onUrl?.call(url);
+          if (url != null && url.isNotEmpty) _deliverTap(url);
         } catch (_) {}
       },
     );
@@ -164,14 +172,29 @@ class PushCenter {
     );
   }
 
-  void _onColdTap(RemoteMessage message) {
+  Future<void> _onColdTap(RemoteMessage message) async {
     final String? url = message.data['url'] as String?;
-    if (url != null && url.isNotEmpty) _locker.holdColdUrl(url);
+    if (url == null || url.isEmpty) return;
+    await _locker.holdColdUrl(url);
   }
 
-  void _onWarmTap(RemoteMessage message) {
+  Future<void> _onWarmTap(RemoteMessage message) async {
     final String? url = message.data['url'] as String?;
-    if (url != null && url.isNotEmpty) onUrl?.call(url);
+    if (url == null || url.isEmpty) return;
+    await _deliverTap(url);
+  }
+
+  /// Route a live tap: if [SiteShell] is up, hand the URL to it directly;
+  /// otherwise stash the URL as a cold URL and ask the app to bounce
+  /// through WarmupScreen so the boot pipeline picks it up.
+  Future<void> _deliverTap(String url) async {
+    final void Function(String)? live = onUrl;
+    if (live != null) {
+      live(url);
+      return;
+    }
+    await _locker.holdColdUrl(url);
+    onOrphanTap?.call();
   }
 
   Future<Uint8List?> _grabImage(String url) async {

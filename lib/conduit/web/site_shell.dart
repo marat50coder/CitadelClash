@@ -87,10 +87,10 @@ class _SiteShellState extends State<SiteShell> with WidgetsBindingObserver {
   }
 
   void _immersive() {
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: const <SystemUiOverlay>[SystemUiOverlay.bottom],
-    );
+    // Hide the system navigation bar entirely; a swipe from the edge
+    // temporarily reveals it (immersiveSticky) so the user can still get
+    // out, but the WebView renders edge-to-edge with no chrome.
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,

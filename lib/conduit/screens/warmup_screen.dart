@@ -59,7 +59,11 @@ class _WarmupScreenState extends State<WarmupScreen>
   void initState() {
     super.initState();
     _bar.animateTo(0.08, duration: const Duration(milliseconds: 400));
-    _drive();
+    // precacheImage() inside _drive() reads MediaQuery.of(context); that
+    // is illegal until after the first frame, so defer the whole boot.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _drive();
+    });
   }
 
   @override

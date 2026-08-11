@@ -61,7 +61,12 @@ class _PushAskScreenState extends State<PushAskScreen> {
     final String bg = landscape
         ? AppAssets.notifyLandscape
         : AppAssets.notifyPortrait;
-    final double rail = size.width * (landscape ? 0.30 : 0.72);
+    // Landscape rail is 20% narrower than portrait's proportional share, and
+    // clamped tighter, so the buttons over Horizontal_Notifications_Screen
+    // sit at ~80% of their previous footprint.
+    final double rail = size.width * (landscape ? 0.24 : 0.72);
+    final double railMin = landscape ? 176.0 : 220.0;
+    final double railMax = landscape ? 336.0 : 420.0;
 
     return Scaffold(
       backgroundColor: const Color(0xFF0C1A2A),
@@ -84,7 +89,7 @@ class _PushAskScreenState extends State<PushAskScreen> {
             bottom: size.height * (landscape ? 0.07 : 0.09),
             child: Center(
               child: SizedBox(
-                width: rail.clamp(220.0, 420.0),
+                width: rail.clamp(railMin, railMax),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -92,15 +97,15 @@ class _PushAskScreenState extends State<PushAskScreen> {
                       label: 'Accept',
                       onTap: _accept,
                       width: double.infinity,
-                      height: landscape ? 48 : 56,
+                      height: landscape ? 38 : 56,
                     ),
-                    SizedBox(height: landscape ? 10 : 14),
+                    SizedBox(height: landscape ? 8 : 14),
                     GateButton(
                       label: 'Skip',
                       tone: GateTone.ghost,
                       onTap: _skip,
                       width: double.infinity,
-                      height: landscape ? 44 : 50,
+                      height: landscape ? 35 : 50,
                     ),
                   ],
                 ),

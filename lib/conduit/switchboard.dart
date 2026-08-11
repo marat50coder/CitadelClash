@@ -51,6 +51,15 @@ class Switchboard {
         _route(onStep ?? (_) {}).whenComplete(() => _pending = null);
   }
 
+  /// Drop the in-flight route so the next [route] call starts over.
+  /// Used when a push tap arrives during (or after) a running route:
+  /// the old decision was made before the new URL was stashed, so a
+  /// fresh evaluation is required. The old future keeps running to
+  /// completion; its result is simply discarded.
+  void invalidate() {
+    _pending = null;
+  }
+
   Future<Exit> _route(void Function(double) step) async {
     if (!Knobs.gateArmed) {
       step(1);
@@ -81,6 +90,8 @@ class Switchboard {
     try {
       await push.boot();
     } catch (_) {}
+    final Exit? tapped = await _pickTappedUrl(step);
+    if (tapped != null) return tapped;
     if (!await reach.canReach()) return const DarkExit();
     step(0.52);
     await attribution.boot();
@@ -106,6 +117,8 @@ class Switchboard {
     }
 
     await Future.wait<void>(<Future<void>>[push.boot(), attribution.boot()]);
+    final Exit? tapped = await _pickTappedUrl(step);
+    if (tapped != null) return tapped;
     if (!await reach.canReach()) {
       if (cached != null) return SiteExit(cached);
       return const DarkExit();
@@ -125,6 +138,8 @@ class Switchboard {
       return const PlayExit();
     }
     await Future.wait<void>(<Future<void>>[push.boot(), attribution.boot()]);
+    final Exit? tapped = await _pickTappedUrl(step);
+    if (tapped != null) return tapped;
     if (!await reach.canReach()) {
       step(1);
       return const PlayExit();
@@ -136,6 +151,17 @@ class Switchboard {
     if (!reply.pointsSomewhere) return const PlayExit();
     await locker.keepLane(Lane.site);
     return SiteExit(reply.url!);
+  }
+
+  /// After [push.boot] resolved `getInitialMessage()` (the cold-tap that
+  /// woke the app), the URL is now in the locker. Consume it here so the
+  /// tap always trumps the cached/server destination.
+  Future<Exit?> _pickTappedUrl(void Function(double) step) async {
+    final String? url = await locker.takeColdUrl();
+    if (url == null || url.isEmpty) return null;
+    await locker.keepLane(Lane.site);
+    step(1);
+    return SiteExit(url, pushedIn: true);
   }
 
   Future<ServerReply> _query({String? token}) async {
