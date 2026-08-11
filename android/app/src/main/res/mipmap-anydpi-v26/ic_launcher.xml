@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Launcher icon. The full artwork is inset so the crane and tower fit inside
-     the mask with room to spare, while the gradient background (ic_icon_bg)
-     extends the sky/ground colours to cover the whole icon, leaving no empty
-     border under any mask (circle, squircle, teardrop). -->
+<!-- Adaptive launcher icon.
+     background: @color/launch_bg — a dark neutral tone bridging the sky-blue
+     top corners and the dark-ground bottom corners of the source art.
+     foreground: the full icon art with a 20% inset. The Android spec safe
+     zone is 66/108 dp of the 108 dp canvas, i.e. an inset of 19.44% on each
+     side; 20% rounds up so a circle mask (Pixel) trims exactly through the
+     background band, never through the composition (crane arm, TOP badge,
+     brickwork). If the icon feels too small, drop the inset to ~16% but
+     accept that a hard circular mask will nip the corners. Kept in sync
+     with drawable-anydpi-v26/ic_splash_logo.xml so the Android 12+ splash
+     matches the home-screen icon pixel-for-pixel. -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@drawable/ic_icon_bg" />
+    <background android:drawable="@color/launch_bg" />
     <foreground>
         <inset
             android:drawable="@drawable/ic_icon_fg"
-            android:inset="18%" />
+            android:inset="20%" />
     </foreground>
 </adaptive-icon>

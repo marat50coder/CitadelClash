@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Android 12+ launch theme. The platform splash screen draws the
-         adaptive icon (ic_splash_logo) on launch_sky, so the splash matches the
-         launcher icon. -->
+    <!-- Android 12+ launch theme (light). The platform SplashScreen API draws
+         @drawable/ic_splash_logo (an AdaptiveIconDrawable that matches
+         @mipmap/ic_launcher) on top of @color/launch_bg, so the splash is a
+         pixel-for-pixel echo of the home-screen icon. -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">@drawable/launch_background</item>
         <item name="android:windowFullscreen">true</item>
-        <item name="android:windowSplashScreenBackground">@color/launch_sky</item>
+        <item name="android:windowSplashScreenBackground">@color/launch_bg</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
-        <item name="android:windowSplashScreenIconBackgroundColor">@color/launch_sky</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/launch_bg</item>
     </style>
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <item name="android:windowBackground">@color/launch_sky</item>
+        <item name="android:windowBackground">@color/launch_bg</item>
         <item name="android:windowFullscreen">true</item>
     </style>
 </resources>

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Sky tone used for the pre-splash window and the Android 12+ splash
-         background, matching the top of the icon art. -->
+    <!-- Sky tone kept for the pre-splash (Android <12) drawable/launch_background.xml. -->
     <color name="launch_sky">#4FB8F5</color>
+    <!-- Adaptive-icon + Android 12+ splash background. A dark neutral tone that
+         sits between the icon's sky-blue top corners (#0059D0) and dark-ground
+         bottom corners (#243805), so a launcher mask can never expose an ugly
+         seam at the perimeter of the inset foreground. -->
+    <color name="launch_bg">#0A2438</color>
 </resources>

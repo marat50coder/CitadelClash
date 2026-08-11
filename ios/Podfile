@@ -1,5 +1,7 @@
-# Uncomment this line to define a global platform for your project
-# platform :ios, '13.0'
+# firebase_app_check (and the rest of the Firebase iOS SDK it pulls in)
+# requires iOS 15.0 as of the versions pinned in pubspec.yaml, so pin the
+# global CocoaPods platform to match Runner.xcodeproj's deployment target.
+platform :ios, '15.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
