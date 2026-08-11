@@ -14,6 +14,10 @@ class AppAssets {
   static const String offlinePortrait = '$_extra/Vertical_Nowifi_Screen.webp';
   static const String offlineLandscape =
       '$_extra/Horizontal_Nowifi_Screen.webp';
+  static const String notifyPortrait =
+      '$_extra/Vertical_Notifications_Screen.webp';
+  static const String notifyLandscape =
+      '$_extra/Horizontal_Notifications_Screen.webp';
 
   // Gameplay art.
   static const String sky = '$_game/bg_sky_asset.webp';

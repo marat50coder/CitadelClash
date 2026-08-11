@@ -3,26 +3,45 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../core/app_assets.dart';
-import '../core/audio_manager.dart';
-import '../core/game_storage.dart';
-import '../core/ui_kit.dart';
-import 'menu_screen.dart';
+import '../../src/core/app_assets.dart';
+import '../../src/core/audio_manager.dart';
+import '../../src/core/game_storage.dart';
+import '../../src/core/ui_kit.dart';
+import '../../src/screens/menu_screen.dart';
+import '../model/exit.dart';
+import '../push/push_center.dart';
+import '../store/locker.dart';
+import '../switchboard.dart';
+import '../web/site_shell.dart';
+import 'no_net_screen.dart';
+import 'push_ask_screen.dart';
 
-/// First screen of the app. It works in both orientations, warms up every
-/// asset and only lets the bar reach 100% at the very moment the game starts.
-class LoadingScreen extends StatefulWidget {
-  const LoadingScreen({super.key});
+/// The only startup surface. Shows the loading art + hazard bar while
+/// the [Switchboard] resolves, then switches on the [Exit] and pushes
+/// exactly one route. Game warmup (storage/audio/art) happens only on
+/// the [PlayExit] branch so the gray surfaces stay independent of the
+/// game's runtime.
+class WarmupScreen extends StatefulWidget {
+  const WarmupScreen({
+    super.key,
+    required this.board,
+    required this.locker,
+    required this.push,
+  });
+
+  final Switchboard board;
+  final Locker locker;
+  final PushCenter push;
 
   @override
-  State<LoadingScreen> createState() => _LoadingScreenState();
+  State<WarmupScreen> createState() => _WarmupScreenState();
 }
 
-class _LoadingScreenState extends State<LoadingScreen>
+class _WarmupScreenState extends State<WarmupScreen>
     with TickerProviderStateMixin {
-  late final AnimationController _progress = AnimationController(
+  late final AnimationController _bar = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 600),
+    duration: const Duration(milliseconds: 500),
   );
   late final AnimationController _stripes = AnimationController(
     vsync: this,
@@ -33,93 +52,89 @@ class _LoadingScreenState extends State<LoadingScreen>
     duration: const Duration(milliseconds: 1800),
   )..repeat();
 
-  bool _started = false;
+  bool _handled = false;
+  bool _screensReady = false;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_started) return;
-    _started = true;
-    unawaited(_boot());
+  void initState() {
+    super.initState();
+    _bar.animateTo(0.08, duration: const Duration(milliseconds: 400));
+    _drive();
   }
 
   @override
   void dispose() {
-    _progress.dispose();
+    _bar.dispose();
     _stripes.dispose();
     _dots.dispose();
     super.dispose();
   }
 
-  Future<void> _boot() async {
+  Future<void> _drive() async {
     final Stopwatch clock = Stopwatch()..start();
-
-    unawaited(
-      _progress.animateTo(
-        0.28,
-        duration: const Duration(milliseconds: 800),
-        curve: Curves.easeOutCubic,
-      ),
-    );
-
     await _precacheScreens();
-    if (!mounted) return;
-    await _progress.animateTo(
-      0.52,
-      duration: const Duration(milliseconds: 550),
-      curve: Curves.easeOut,
-    );
 
-    await GameStorage.instance.init();
-    await AudioManager.instance.init();
-    if (!mounted) return;
-    await _progress.animateTo(
-      0.74,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeOut,
-    );
+    final Exit exit = await widget.board.route(onStep: _lift);
+    if (!mounted || _handled) return;
+    _handled = true;
 
-    await _precacheGameArt();
-    if (!mounted) return;
-    await _progress.animateTo(
-      0.93,
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeOut,
-    );
-
-    // Keep the splash on screen long enough to be read, never shorter.
-    const Duration minimum = Duration(milliseconds: 3400);
-    final Duration remaining = minimum - clock.elapsed;
-    if (remaining > Duration.zero) await Future<void>.delayed(remaining);
+    // Give the bar a beat to finish and the art a moment to be read.
+    await _bar.animateTo(1, duration: const Duration(milliseconds: 360));
+    const Duration floor = Duration(milliseconds: 1600);
+    final Duration left = floor - clock.elapsed;
+    if (left > Duration.zero) await Future<void>.delayed(left);
     if (!mounted) return;
 
-    // The bar completes only immediately before the game opens.
-    await _progress.animateTo(
-      1.0,
-      duration: const Duration(milliseconds: 420),
-      curve: Curves.easeOutCubic,
-    );
-    await Future<void>.delayed(const Duration(milliseconds: 320));
+    final Widget next = switch (exit) {
+      PlayExit() => await _openGame(),
+      SiteExit(url: final String url) => _openSite(url),
+      DarkExit() => _openDark(),
+    };
     if (!mounted) return;
-
-    await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    if (!mounted) return;
-
-    unawaited(AudioManager.instance.playMusic(AppAssets.musicMenu));
     Navigator.of(context).pushReplacement(
       PageRouteBuilder<void>(
-        transitionDuration: const Duration(milliseconds: 550),
-        pageBuilder: (_, _, _) => const MenuScreen(),
-        transitionsBuilder: (_, Animation<double> animation, _, Widget child) =>
-            FadeTransition(opacity: animation, child: child),
+        transitionDuration: const Duration(milliseconds: 420),
+        pageBuilder: (_, _, _) => next,
+        transitionsBuilder: (_, Animation<double> a, _, Widget child) =>
+            FadeTransition(opacity: a, child: child),
       ),
     );
   }
 
+  Future<Widget> _openGame() async {
+    await SystemChrome.setPreferredOrientations(const <DeviceOrientation>[
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    await GameStorage.instance.init();
+    await AudioManager.instance.init();
+    await _precacheGameArt();
+    unawaited(AudioManager.instance.playMusic(AppAssets.musicMenu));
+    return const MenuScreen();
+  }
+
+  Widget _openSite(String url) {
+    if (widget.locker.shouldAskPush) {
+      return PushAskScreen(
+        locker: widget.locker,
+        push: widget.push,
+        destUrl: url,
+      );
+    }
+    return SiteShell(url: url, locker: widget.locker, push: widget.push);
+  }
+
+  Widget _openDark() => NoNetScreen(
+        rebuild: (_) => WarmupScreen(
+          board: widget.board,
+          locker: widget.locker,
+          push: widget.push,
+        ),
+      );
+
   Future<void> _precacheScreens() async {
+    if (_screensReady) return;
+    _screensReady = true;
     await Future.wait<void>(<Future<void>>[
       precacheImage(const AssetImage(AppAssets.loadingPortrait), context),
       precacheImage(const AssetImage(AppAssets.loadingLandscape), context),
@@ -129,8 +144,19 @@ class _LoadingScreenState extends State<LoadingScreen>
   Future<void> _precacheGameArt() async {
     for (final String asset in AppAssets.preloadImages) {
       if (!mounted) return;
-      await precacheImage(AssetImage(asset), context);
+      try {
+        await precacheImage(AssetImage(asset), context);
+      } catch (_) {}
     }
+  }
+
+  void _lift(double value) {
+    if (!mounted) return;
+    _bar.animateTo(
+      value.clamp(0.0, 1.0),
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.easeOut,
+    );
   }
 
   @override
@@ -141,12 +167,10 @@ class _LoadingScreenState extends State<LoadingScreen>
         builder: (BuildContext context, Orientation orientation) {
           final bool portrait = orientation == Orientation.portrait;
           final Size size = MediaQuery.sizeOf(context);
-          final double barWidth = portrait
-              ? size.width * 0.80
-              : size.width * 0.56;
-          final double bottomInset = portrait
-              ? size.height * 0.10
-              : size.height * 0.09;
+          final double barWidth =
+              portrait ? size.width * 0.80 : size.width * 0.56;
+          final double bottomInset =
+              portrait ? size.height * 0.10 : size.height * 0.09;
 
           return Stack(
             fit: StackFit.expand,
@@ -156,7 +180,6 @@ class _LoadingScreenState extends State<LoadingScreen>
                     ? AppAssets.loadingPortrait
                     : AppAssets.loadingLandscape,
                 fit: BoxFit.cover,
-                alignment: Alignment.center,
               ),
               Positioned(
                 left: 0,
@@ -181,13 +204,11 @@ class _LoadingScreenState extends State<LoadingScreen>
                   child: SizedBox(
                     width: barWidth,
                     child: AnimatedBuilder(
-                      animation: Listenable.merge(<Listenable>[
-                        _progress,
-                        _stripes,
-                        _dots,
-                      ]),
+                      animation: Listenable.merge(
+                        <Listenable>[_bar, _stripes, _dots],
+                      ),
                       builder: (BuildContext context, _) {
-                        final int percent = (_progress.value * 100).round();
+                        final int percent = (_bar.value * 100).round();
                         return Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -210,7 +231,7 @@ class _LoadingScreenState extends State<LoadingScreen>
                             ),
                             const SizedBox(height: 10),
                             HazardProgressBar(
-                              progress: _progress.value,
+                              progress: _bar.value,
                               phase: _stripes.value * 60,
                               height: portrait ? 26 : 22,
                             ),

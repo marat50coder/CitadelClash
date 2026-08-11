@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "596053179548",
+    "project_id": "citadel-clash-e286e",
+    "storage_bucket": "citadel-clash-e286e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:596053179548:android:12a1ecd457ed699dc40159",
+        "android_client_info": {
+          "package_name": "com.citadelclash.citadelclashgame"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-3lvF2ZiLudPFtskaCfSrQsAH0HL-qDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

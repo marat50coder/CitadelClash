@@ -31,11 +31,26 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  webview_flutter: ^4.14.1
+  # ── Game (white part) ──
   audioplayers: ^6.8.1
   shared_preferences: ^2.5.5
+
+  # ── Conduit (gray flow) stack ──
+  # NOTE: never add file_picker >=10.x — its Kotlin-only plugin brings a
+  # KGP that collides with Flutter's built-in Kotlin support. The native
+  # chooser bridge in MainActivity.kt is used instead.
+  webview_flutter: ^4.14.1
+  webview_flutter_android: ^4.13.0
+  connectivity_plus: ^7.1.1
+  http: ^1.6.0
+  url_launcher: ^6.3.2
+  device_info_plus: ^11.4.0
+  flutter_secure_storage: ^10.3.1
+  appsflyer_sdk: ^6.18.0
+  firebase_core: ^4.11.0
+  firebase_messaging: ^16.4.0
+  firebase_app_check: ^0.4.5
+  flutter_local_notifications: ^22.0.1
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +79,8 @@ flutter:
     - assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Horizontal_Loading_Screen.webp
     - assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Vertical_Nowifi_Screen.webp
     - assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Horizontal_Nowifi_Screen.webp
+    - assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Vertical_Notifications_Screen.webp
+    - assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Horizontal_Notifications_Screen.webp
     - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/bgm_menu.wav
     - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/bgm_game.wav
     - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/button_click.wav
