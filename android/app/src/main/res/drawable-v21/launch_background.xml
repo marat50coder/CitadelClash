@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Android 5+ variant of drawable/launch_background.xml — kept as a separate
+     resource so that dynamic resource selection picks up the right file for
+     API 21+ without falling through to the default drawable/. Same layers as
+     the default variant. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/launch_sky" />
+    <item android:drawable="@color/launch_bg" />
     <item>
         <bitmap
-            android:gravity="center"
-            android:src="@drawable/launch_logo" />
+            android:src="@drawable/ic_splash_legacy"
+            android:gravity="center" />
     </item>
 </layer-list>

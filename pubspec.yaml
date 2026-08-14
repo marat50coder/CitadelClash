@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.1+3
+version: 1.0.1+6
 
 environment:
   sdk: ^3.12.2
@@ -94,16 +94,26 @@ flutter:
     - assets/Citadel_Clash_assets/Citadel_Clash_sounds_assets/fail.wav
 
 # Launcher icon + Android 12+ splash are maintained by hand under
-# android/app/src/main/res (a sky-to-ground gradient background @drawable/
-# ic_icon_bg + an 18% inset of the icon art, shared by
-# mipmap-anydpi-v26/ic_launcher.xml and drawable-anydpi-v26/ic_splash_logo.xml).
-# This block is kept only so a manual `dart run flutter_launcher_icons` still
-# produces a matching icon; it will overwrite the hand-written XML, so re-apply
-# the gradient background, inset and splash afterwards.
+# android/app/src/main/res using the full-bleed art strategy:
+#   mipmap-anydpi-v26/ic_launcher.xml, mipmap-anydpi-v26/ic_launcher_round.xml
+#   and drawable-anydpi-v26/ic_splash_logo.xml are byte-identical
+#   <adaptive-icon>s where background = @drawable/ic_launcher_art (a
+#   pre-composited gradient + centred art PNG) and foreground = transparent.
+# Regenerate the composited PNGs (drawable-nodpi/ic_launcher_art.png,
+# drawable-nodpi/ic_splash_legacy.png and the mipmap-*/ic_launcher.png bucket)
+# with `dart run tool/make_launcher_icons.dart`. The tool also prints the
+# gradient midpoint hex — drop it into values/colors.xml → @color/launch_bg so
+# the Android 12+ splash background matches the icon gradient seamlessly.
+# Do NOT run `dart run flutter_launcher_icons` — it will overwrite the hand-
+# written XML and drop the source edge-to-edge into the background layer,
+# which nukes the ~16% safe-zone padding and lets a circle mask eat the TOP
+# badge and crane hook. The block below is kept only so an accidental
+# invocation still produces something recognisable; reapply the hand-written
+# XML afterwards.
 flutter_launcher_icons:
   android: "ic_launcher"
   ios: false
   image_path: "assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Icon.png"
-  adaptive_icon_background: "#0A6BCE"
+  adaptive_icon_background: "#316370"
   adaptive_icon_foreground: "assets/Citadel_Clash_assets/Citadel_Clash_additional_assets/Icon.png"
   min_sdk_android: 23

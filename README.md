@@ -45,7 +45,6 @@ multipliers and the stake row above the primary action button.
 
 ```
 assets/Citadel_Clash_assets/   original artwork and sounds
-assets/launcher/               generated launcher icon sources
 lib/src/core/                  assets registry, audio, storage, shared widgets
 lib/src/game/                  crash engine and play field geometry/painters
 lib/src/screens/               loading, menu, game and web screens

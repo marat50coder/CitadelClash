@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Android 12+ launch theme (light). The platform SplashScreen API draws
-         @drawable/ic_splash_logo (an AdaptiveIconDrawable that matches
-         @mipmap/ic_launcher) on top of @color/launch_bg, so the splash is a
-         pixel-for-pixel echo of the home-screen icon. -->
+    <!-- Android 12+ launch theme (light). AndroidManifest points the launcher
+         activity at LaunchTheme, so this is the theme the SplashScreen API
+         reads its windowSplashScreen* attributes from. Flutter's embedding
+         swaps the activity theme to @style/NormalTheme after boot via the
+         `io.flutter.embedding.android.NormalTheme` <meta-data> in the manifest
+         — we deliberately do NOT set `android:postSplashScreenTheme` because
+         that attribute lives in androidx.core:core-splashscreen, not the
+         platform, so declaring it here would fail aapt2 linking. -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">@drawable/launch_background</item>
         <item name="android:windowFullscreen">true</item>

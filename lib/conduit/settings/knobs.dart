@@ -20,7 +20,7 @@ abstract final class Knobs {
 
   // ── Timings (range noted; all project-unique) ─────────────
   /// Snooze after "Skip" on the push invite. Range 2..7 days.
-  static const int pushSnoozeSeconds = 345600; // 4 days
+  static const int pushSnoozeSeconds = 259200; // 3 days
 
   /// Delay before re-querying GCD on an Organic first callback. 4..12s.
   static const int organicRescueSeconds = 9;

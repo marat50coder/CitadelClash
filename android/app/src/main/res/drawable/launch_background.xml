@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Legacy pre-splash (Android <12). SplashScreen API only kicks in on
+     Android 12+, so on older releases we paint the launch_bg colour under a
+     centred pre-composited icon (ic_splash_legacy.png — same gradient + art
+     as the launcher icon) to keep the boot experience consistent. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/launch_sky" />
+    <item android:drawable="@color/launch_bg" />
     <item>
         <bitmap
-            android:gravity="center"
-            android:src="@drawable/launch_logo" />
+            android:src="@drawable/ic_splash_legacy"
+            android:gravity="center" />
     </item>
 </layer-list>

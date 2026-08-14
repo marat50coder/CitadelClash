@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Android 12+ splash icon. Byte-identical to mipmap-anydpi-v26/ic_launcher.xml
-     so the launch screen shows the exact same adaptive icon (same background
-     colour, same 14% inset of the foreground art) as the home-screen icon.
+     so the launch screen shows the exact same adaptive icon as the home-screen
+     ярлык.
 
      The SplashScreen API rejects anything that isn't an AdaptiveIconDrawable
      and silently falls back to the launcher icon — meaning a flat PNG here
-     would show up clipped on Android 12+ devices.      Keep this file an
+     would show up clipped on Android 12+ devices. Keep this file an
      <adaptive-icon>. -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@color/launch_bg" />
-    <foreground>
-        <inset
-            android:drawable="@drawable/ic_icon_fg"
-            android:inset="20%" />
-    </foreground>
+    <background android:drawable="@drawable/ic_launcher_art" />
+    <foreground android:drawable="@android:color/transparent" />
 </adaptive-icon>

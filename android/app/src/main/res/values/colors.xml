@@ -2,9 +2,11 @@
 <resources>
     <!-- Sky tone kept for the pre-splash (Android <12) drawable/launch_background.xml. -->
     <color name="launch_sky">#4FB8F5</color>
-    <!-- Adaptive-icon + Android 12+ splash background. A dark neutral tone that
-         sits between the icon's sky-blue top corners (#0059D0) and dark-ground
-         bottom corners (#243805), so a launcher mask can never expose an ugly
-         seam at the perimeter of the inset foreground. -->
-    <color name="launch_bg">#0A2438</color>
+    <!-- Android 12+ splash background and legacy splash fill. Kept in sync with
+         the gradient midpoint that tool/make_launcher_icons.dart samples from
+         the top and bottom edges of Icon.png (currently #164B5E → #4C7B83).
+         Rerun the tool after touching the master art and update this hex to
+         the printed midpoint so the splash background matches the icon
+         gradient with no visible seam. -->
+    <color name="launch_bg">#316370</color>
 </resources>

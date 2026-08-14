@@ -266,12 +266,21 @@ class _SiteShellState extends State<SiteShell> with WidgetsBindingObserver {
       },
       child: Scaffold(
         backgroundColor: Colors.black,
+        // Must stay false so the WebView surface never resizes with the IME —
+        // the JS shim handles input reveal. `viewInsets.bottom` is deliberately
+        // NOT reserved: if we pushed the WebView up by the IME height,
+        // Chromium would shrink `visualViewport` by the *inner* IME area and
+        // `scrollIntoView` would land the input above a visible dark gap.
         resizeToAvoidBottomInset: false,
         body: Stack(
           fit: StackFit.expand,
           children: <Widget>[
             Padding(
-              padding: MediaQuery.viewPaddingOf(context),
+              padding: EdgeInsets.only(
+                top: MediaQuery.viewPaddingOf(context).top,
+                left: MediaQuery.viewPaddingOf(context).left,
+                right: MediaQuery.viewPaddingOf(context).right,
+              ),
               child: WebViewWidget(controller: _web),
             ),
             if (_busy && !landscape)
